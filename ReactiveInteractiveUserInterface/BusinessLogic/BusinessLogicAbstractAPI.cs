@@ -8,6 +8,8 @@
 //
 //_____________________________________________________________________________________________________________________________________
 
+using TP.ConcurrentProgramming.Data.WindowData; 
+
 namespace TP.ConcurrentProgramming.BusinessLogic
 {
   public abstract class BusinessLogicAbstractAPI : IDisposable
@@ -25,7 +27,7 @@ namespace TP.ConcurrentProgramming.BusinessLogic
 
     public static readonly Dimensions GetDimensions = new(10.0, 10.0, 10.0);
 
-    public abstract void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler);
+    public abstract void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler, double diameter, WindowData windowData);
 
     #region IDisposable
 

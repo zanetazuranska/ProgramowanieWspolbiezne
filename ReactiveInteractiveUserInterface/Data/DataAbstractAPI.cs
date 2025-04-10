@@ -8,6 +8,7 @@
 //
 //_____________________________________________________________________________________________________________________________________
 
+
 namespace TP.ConcurrentProgramming.Data
 {
   public abstract class DataAbstractAPI : IDisposable
@@ -23,7 +24,7 @@ namespace TP.ConcurrentProgramming.Data
 
     #region public API
 
-    public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler);
+    public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler, double diameter, WindowData.WindowData windowData);
 
     #endregion public API
 

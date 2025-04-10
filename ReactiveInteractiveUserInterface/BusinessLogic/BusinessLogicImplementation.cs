@@ -10,6 +10,7 @@
 
 using System.Diagnostics;
 using UnderneathLayerAPI = TP.ConcurrentProgramming.Data.DataAbstractAPI;
+using TP.ConcurrentProgramming.Data.WindowData;
 
 namespace TP.ConcurrentProgramming.BusinessLogic
 {
@@ -37,13 +38,13 @@ namespace TP.ConcurrentProgramming.BusinessLogic
       Disposed = true;
     }
 
-    public override void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler)
+    public override void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler, double diameter, WindowData windowData)
     {
       if (Disposed)
         throw new ObjectDisposedException(nameof(BusinessLogicImplementation));
       if (upperLayerHandler == null)
         throw new ArgumentNullException(nameof(upperLayerHandler));
-      layerBellow.Start(numberOfBalls, (startingPosition, databall) => upperLayerHandler(new Position(startingPosition.x, startingPosition.x), new Ball(databall)));
+      layerBellow.Start(numberOfBalls, (startingPosition, databall) => upperLayerHandler(new Position(startingPosition.x, startingPosition.x), new Ball(databall)), diameter, windowData);
     }
 
     #endregion BusinessLogicAbstractAPI

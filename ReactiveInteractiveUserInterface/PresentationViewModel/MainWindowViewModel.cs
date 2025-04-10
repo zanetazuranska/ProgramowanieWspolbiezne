@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using TP.ConcurrentProgramming.Presentation.Model;
 using TP.ConcurrentProgramming.Presentation.ViewModel.MVVMLight;
 using ModelIBall = TP.ConcurrentProgramming.Presentation.Model.IBall;
+using TP.ConcurrentProgramming.Data.WindowData;
 
 namespace TP.ConcurrentProgramming.Presentation.ViewModel
 {
@@ -32,11 +33,11 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
 
     #region public API
 
-    public void Start(int numberOfBalls)
+    public void Start(int numberOfBalls, double diameter, WindowData windowData)
     {
       if (Disposed)
         throw new ObjectDisposedException(nameof(MainWindowViewModel));
-      ModelLayer.Start(numberOfBalls);
+      ModelLayer.Start(numberOfBalls, diameter, windowData);
       Observer.Dispose();
     }
 

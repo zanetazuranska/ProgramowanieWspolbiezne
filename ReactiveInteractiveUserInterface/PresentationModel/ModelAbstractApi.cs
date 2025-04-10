@@ -9,6 +9,7 @@
 
 using System;
 using System.ComponentModel;
+using TP.ConcurrentProgramming.Data.WindowData;
 
 namespace TP.ConcurrentProgramming.Presentation.Model
 {
@@ -26,7 +27,7 @@ namespace TP.ConcurrentProgramming.Presentation.Model
       return modelInstance.Value;
     }
 
-    public abstract void Start(int numberOfBalls);
+    public abstract void Start(int numberOfBalls, double diameter, WindowData windowData);
 
     #region IObservable
 

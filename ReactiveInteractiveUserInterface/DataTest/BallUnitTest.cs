@@ -10,27 +10,31 @@
 
 namespace TP.ConcurrentProgramming.Data.Test
 {
-  [TestClass]
-  public class BallUnitTest
-  {
-    [TestMethod]
-    public void ConstructorTestMethod()
+    [TestClass]
+    public class BallUnitTest
     {
-      Vector testinVector = new Vector(0.0, 0.0);
-      Ball newInstance = new(testinVector, testinVector);
-    }
+        [TestMethod]
+        public void ConstructorTestMethod()
+        {
+            Vector testinVector = new Vector(0.0, 0.0);
+            WindowData.WindowData testWindowData = new WindowData.WindowData(100, 100, 1);
+            double testDiameter = 20.0d;
+            Ball newInstance = new(testinVector, testinVector, testDiameter, testWindowData);
+        }
 
-    [TestMethod]
-    public void MoveTestMethod()
-    {
-      Vector initialPosition = new(10.0, 10.0);
-      Ball newInstance = new(initialPosition, new Vector(0.0, 0.0));
-      IVector curentPosition = new Vector(0.0, 0.0);
-      int numberOfCallBackCalled = 0;
-      newInstance.NewPositionNotification += (sender, position) => { Assert.IsNotNull(sender); curentPosition = position; numberOfCallBackCalled++; };
-      newInstance.Move(new Vector(0.0, 0.0));
-      Assert.AreEqual<int>(1, numberOfCallBackCalled);
-      Assert.AreEqual<IVector>(initialPosition, curentPosition);
+        [TestMethod]
+        public void MoveTestMethod()
+        {
+            Vector initialPosition = new(10.0, 10.0);
+            WindowData.WindowData testWindowData = new WindowData.WindowData(100, 100, 1);
+            double testDiameter = 20.0d;
+            Ball newInstance = new(initialPosition, new Vector(0.0, 0.0), testDiameter, testWindowData);
+            IVector curentPosition = new Vector(0.0, 0.0);
+            int numberOfCallBackCalled = 0;
+            newInstance.NewPositionNotification += (sender, position) => { Assert.IsNotNull(sender); curentPosition = position; numberOfCallBackCalled++; };
+            newInstance.Move(new Vector(0.0, 0.0));
+            Assert.AreEqual<int>(1, numberOfCallBackCalled);
+            Assert.AreEqual<IVector>(initialPosition, curentPosition);
+        }
     }
-  }
 }

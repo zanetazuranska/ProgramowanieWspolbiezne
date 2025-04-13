@@ -9,24 +9,40 @@
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
-    <Border BorderThickness="4" BorderBrush="Green" Height="420" Width="400">
-        <ItemsControl ItemsSource="{Binding Balls}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Ellipse Width= "{Binding Diameter}" Height="{Binding Diameter}" Fill="Blue" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Top" Value="{Binding Top}" />
-                    <Setter Property="Canvas.Left" Value="{Binding Left}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-        </ItemsControl>
-    </Border>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+        <Border BorderThickness="4" BorderBrush="Green" Height="420" Width="400">
+            <ItemsControl ItemsSource="{Binding Balls}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="{Binding Diameter}" Height="{Binding Diameter}" Fill="Blue" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                        <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </Border>
+
+        <!-- Dodany suwak -->
+        <Slider Minimum="1" Maximum="100" Value="{Binding BallAmount, Mode=TwoWay}" IsEnabled="{Binding IsStartSimulationEnabled}" Width="300" Margin="0,20,0,0" TickFrequency="1"/>
+        <!-- Pole tekstowe z aktualną wartością -->
+        <TextBlock Text="{Binding BallAmount, StringFormat='Ilość piłek: {0:F0}'}"
+                   FontWeight="Bold"
+                   FontSize="16"
+                   HorizontalAlignment="Center"
+                   Margin="0,10,0,0" />
+
+        <!-- Przycisk -->
+        <Button Content="Rozpocznij symulację" Width="150" Height="30" Margin="0,10,0,0"
+                IsEnabled="{Binding IsStartSimulationEnabled}"
+                Command="{Binding StartSimulation}" />
+    </StackPanel>
 </Window>

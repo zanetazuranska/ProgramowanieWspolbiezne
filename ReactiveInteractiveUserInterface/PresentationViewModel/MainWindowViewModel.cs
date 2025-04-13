@@ -13,73 +13,118 @@ using TP.ConcurrentProgramming.Presentation.Model;
 using TP.ConcurrentProgramming.Presentation.ViewModel.MVVMLight;
 using ModelIBall = TP.ConcurrentProgramming.Presentation.Model.IBall;
 using TP.ConcurrentProgramming.Data.WindowData;
+using System.Windows.Input;
+using System.ComponentModel;
 
 namespace TP.ConcurrentProgramming.Presentation.ViewModel
 {
-  public class MainWindowViewModel : ViewModelBase, IDisposable
-  {
-    #region ctor
-
-    public MainWindowViewModel() : this(null)
-    { }
-
-    internal MainWindowViewModel(ModelAbstractApi modelLayerAPI)
+    public class MainWindowViewModel : ViewModelBase, IDisposable
     {
-      ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
-      Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
-    }
+        #region ctor
 
-    #endregion ctor
-
-    #region public API
-
-    public void Start(int numberOfBalls, double diameter, WindowData windowData)
-    {
-      if (Disposed)
-        throw new ObjectDisposedException(nameof(MainWindowViewModel));
-      ModelLayer.Start(numberOfBalls, diameter, windowData);
-      Observer.Dispose();
-    }
-
-    public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
-
-    #endregion public API
-
-    #region IDisposable
-
-    protected virtual void Dispose(bool disposing)
-    {
-      if (!Disposed)
-      {
-        if (disposing)
+        public MainWindowViewModel() : this(null)
         {
-          Balls.Clear();
-          Observer.Dispose();
-          ModelLayer.Dispose();
+            StartSimulation = new RelayCommand(ExecuteStartSimulation);
         }
 
-        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-        // TODO: set large fields to null
-        Disposed = true;
-      }
+        internal MainWindowViewModel(ModelAbstractApi modelLayerAPI)
+        {
+            ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
+            Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
+            StartSimulation = new RelayCommand(ExecuteStartSimulation);
+        }
+
+        #endregion ctor
+
+        #region public API
+
+        public void Start(double diameter, WindowData windowData)
+        {
+            this.diameter = diameter;
+            this.windowData = windowData;
+        }
+
+        public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
+
+        public ICommand StartSimulation { get; }
+
+        public void ExecuteStartSimulation()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException(nameof(MainWindowViewModel));
+            ModelLayer.Start(ballAmount, diameter, windowData);
+            Observer.Dispose();
+
+            IsStartSimulationEnabled = false;
+        }
+
+        public int BallAmount
+        {
+            get => ballAmount;
+            set
+            {
+                if (ballAmount != value)
+                {
+                    ballAmount = value;
+                    RaisePropertyChanged(nameof(BallAmount));
+                }
+            }
+        }
+
+        public bool IsStartSimulationEnabled
+        {
+            get => isStartSimulationEnabled;
+            set
+            {
+                if (isStartSimulationEnabled != value)
+                {
+                    isStartSimulationEnabled = value;
+                    RaisePropertyChanged(nameof(IsStartSimulationEnabled));
+                }
+            }
+        }
+        #endregion public API
+
+        #region IDisposable
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!Disposed)
+            {
+                if (disposing)
+                {
+                    Balls.Clear();
+                    Observer.Dispose();
+                    ModelLayer.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                Disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException(nameof(MainWindowViewModel));
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion IDisposable
+
+        #region private
+
+        private IDisposable Observer = null;
+        private ModelAbstractApi ModelLayer;
+        private bool Disposed = false;
+
+        private bool isStartSimulationEnabled = true;
+        private int ballAmount = 1;
+        private double diameter = 1;
+        private WindowData windowData;
+
+        #endregion private
     }
-
-    public void Dispose()
-    {
-      if (Disposed)
-        throw new ObjectDisposedException(nameof(MainWindowViewModel));
-      Dispose(disposing: true);
-      GC.SuppressFinalize(this);
-    }
-
-    #endregion IDisposable
-
-    #region private
-
-    private IDisposable Observer = null;
-    private ModelAbstractApi ModelLayer;
-    private bool Disposed = false;
-
-    #endregion private
-  }
 }

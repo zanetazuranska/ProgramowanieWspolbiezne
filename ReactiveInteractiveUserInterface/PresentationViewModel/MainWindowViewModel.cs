@@ -40,8 +40,8 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
 
         public void Start(double diameter, WindowData windowData)
         {
-            this.diameter = diameter;
-            this.windowData = windowData;
+            this.Diameter = diameter;
+            this.WindowData = windowData;
         }
 
         public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
@@ -52,7 +52,7 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
         {
             if (Disposed)
                 throw new ObjectDisposedException(nameof(MainWindowViewModel));
-            ModelLayer.Start(ballAmount, diameter, windowData);
+            ModelLayer.Start(ballAmount, Diameter, WindowData);
             Observer.Dispose();
 
             IsStartSimulationEnabled = false;
@@ -122,8 +122,8 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
 
         private bool isStartSimulationEnabled = true;
         private int ballAmount = 1;
-        private double diameter = 1;
-        private WindowData windowData;
+        public double Diameter { get; private set; } = 1;
+        public WindowData WindowData { get; private set; }
 
         #endregion private
     }

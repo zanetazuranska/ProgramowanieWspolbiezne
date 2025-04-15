@@ -46,7 +46,9 @@ namespace TP.ConcurrentProgramming.Presentation.Model.Test
                 newInstance.Start(10, 20.0d, new(100, 100, 1));
                 Assert.AreEqual<int>(10, underneathLayerFixture.NumberOfBalls);
                 Assert.AreEqual<double>(20.0d, underneathLayerFixture.Diameter);
-                Assert.AreEqual<WindowData>(new(100, 100, 1), underneathLayerFixture.WindowData);
+                Assert.AreEqual<double>(100, underneathLayerFixture.WindowData.ScreenWidth);
+                Assert.AreEqual<double>(100, underneathLayerFixture.WindowData.ScreenHeight);
+                Assert.AreEqual<double>(1, underneathLayerFixture.WindowData.BorderWidth);
                 subscription.Dispose();
                 newInstance.CheckBallChangedEvent(x => Assert.IsTrue(x));
             }

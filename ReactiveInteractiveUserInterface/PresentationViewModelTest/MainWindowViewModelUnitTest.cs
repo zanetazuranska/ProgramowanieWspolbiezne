@@ -27,14 +27,18 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel.Test
             ModelNullFixture nullModelFixture = new();
             Assert.AreEqual<int>(0, nullModelFixture.Disposed);
             Assert.AreEqual<double>(0, nullModelFixture.Diameter);
-            Assert.AreEqual<WindowData>(new(0, 0, 0), nullModelFixture.WindowData);
+            Assert.AreEqual<double>(0, nullModelFixture.WindowData.ScreenWidth);
+            Assert.AreEqual<double>(0, nullModelFixture.WindowData.ScreenHeight);
+            Assert.AreEqual<double>(0, nullModelFixture.WindowData.BorderWidth);
             Assert.AreEqual<int>(0, nullModelFixture.Subscribed);
             using (MainWindowViewModel viewModel = new(nullModelFixture))
             {
                 viewModel.Start(20.0d, new(100, 100, 1));
                 Assert.IsNotNull(viewModel.Balls);
-                Assert.AreEqual<double>(20.0d, nullModelFixture.Diameter);
-                Assert.AreEqual<WindowData>(new(100, 100, 1), nullModelFixture.WindowData);
+                Assert.AreEqual<double>(20.0d, viewModel.Diameter);
+                Assert.AreEqual<double>(100, viewModel.WindowData.ScreenWidth);
+                Assert.AreEqual<double>(100, viewModel.WindowData.ScreenHeight);
+                Assert.AreEqual<double>(1, viewModel.WindowData.BorderWidth);
             }
             Assert.AreEqual<int>(1, nullModelFixture.Disposed);
         }

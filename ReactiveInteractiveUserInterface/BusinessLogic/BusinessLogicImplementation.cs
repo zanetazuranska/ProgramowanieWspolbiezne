@@ -46,11 +46,11 @@ namespace TP.ConcurrentProgramming.BusinessLogic
                 throw new ObjectDisposedException(nameof(BusinessLogicImplementation));
             if (upperLayerHandler == null)
                 throw new ArgumentNullException(nameof(upperLayerHandler));
-            layerBellow.Start(numberOfBalls, (startingPosition, databall) => upperLayerHandler(new Position(startingPosition.x, startingPosition.x), new Ball(databall)), diameter, windowData);
+            layerBellow.Start(numberOfBalls, (startingPosition, databall) => upperLayerHandler(new Position(startingPosition.x, startingPosition.x), new Ball(databall)), diameter);
 
             BallsList = layerBellow.GetBallsList();
             // Initialize and start collision handling
-            var collisionHandler = new CollisionHandler(BallsList);
+            var collisionHandler = new CollisionHandler(BallsList, windowData);
             collisionHandler.StartCollisionDetection();
 
         }
@@ -83,10 +83,12 @@ namespace TP.ConcurrentProgramming.BusinessLogic
     internal class CollisionHandler
     {
         private readonly List<TP.ConcurrentProgramming.Data.IBall> ballsList;
+        private WindowData windowData;
 
-        public CollisionHandler(List<TP.ConcurrentProgramming.Data.IBall> balls)
+        public CollisionHandler(List<TP.ConcurrentProgramming.Data.IBall> balls, WindowData windowData)
         {
             ballsList = balls;
+            this.windowData = windowData;
         }
 
         public void StartCollisionDetection()
@@ -113,6 +115,7 @@ namespace TP.ConcurrentProgramming.BusinessLogic
                                 ResolveCollision(ball, otherBall);
                             }
                         }
+                        ResolveWallsCollision(ball);
                     }
                 }
 
@@ -136,29 +139,11 @@ namespace TP.ConcurrentProgramming.BusinessLogic
             double distance = Math.Sqrt(dx * dx + dy * dy);
             if (distance == 0) return; // Prevent division by zero
 
-            // Normalize the collision normal
+            // Normalny wektor zderzenia
             double nx = dx / distance;
             double ny = dy / distance;
 
-            // Relative velocity
-            double vx = ball1.Velocity.x - ball2.Velocity.x;
-            double vy = ball1.Velocity.y - ball2.Velocity.y;
-
-            // Dot product of relative velocity and collision normal
-            double dot = vx * nx + vy * ny;
-
-            if (dot > 0) return; // Balls are moving away from each other
-
-            // Impulse scalar (assuming equal mass and perfectly elastic)
-            double impulse = 2 * dot / 2;
-
-            // Apply impulse to each ball's velocity
-            ball1.Velocity.x -= impulse * nx;
-            ball1.Velocity.y -= impulse * ny;
-            ball2.Velocity.x += impulse * nx;
-            ball2.Velocity.y += impulse * ny;
-
-            // Optional: resolve overlap
+            // Separacja nakładających się kul
             double overlap = (ball1.Diameter / 2 + ball2.Diameter / 2) - distance;
             if (overlap > 0)
             {
@@ -166,6 +151,53 @@ namespace TP.ConcurrentProgramming.BusinessLogic
                 ball1.Position.y += ny * overlap / 2;
                 ball2.Position.x -= nx * overlap / 2;
                 ball2.Position.y -= ny * overlap / 2;
+            }
+
+            // Wektor względnej prędkości
+            double vx = ball1.Velocity.x - ball2.Velocity.x;
+            double vy = ball1.Velocity.y - ball2.Velocity.y;
+
+            // Prędkość względna wzdłuż normalnej
+            double dotProduct = vx * nx + vy * ny;
+
+            // Jeśli kulki się oddalają — nic nie robić
+            if (dotProduct >= 0) return;
+
+            // Obliczenie impulsu (dla równych mas i odbicia sprężystego)
+            double impulse = 2 * dotProduct / 2; // dzielimy przez sumę mas (1 + 1)
+
+            // Aktualizacja prędkości
+            ball1.Velocity.x -= impulse * nx;
+            ball1.Velocity.y -= impulse * ny;
+
+            ball2.Velocity.x += impulse * nx;
+            ball2.Velocity.y += impulse * ny;
+        }
+
+        private void ResolveWallsCollision(TP.ConcurrentProgramming.Data.IBall ball)
+        {
+            // Check for collisions with the left and right walls
+            if (ball.Position.x - ball.Diameter / 2 < 0)
+            {
+                ball.Velocity.x = -ball.Velocity.x;
+                ball.Position.x = ball.Diameter / 2;
+            }
+            else if (ball.Position.x + ball.Diameter / 2 > windowData.ScreenWidth - windowData.BorderWidth)
+            {
+                ball.Velocity.x = -ball.Velocity.x;
+                ball.Position.x = windowData.ScreenWidth - windowData.BorderWidth - ball.Diameter / 2;
+            }
+
+            // Check for collisions with the top and bottom walls
+            if (ball.Position.y - ball.Diameter / 2 < 0)
+            {
+                ball.Velocity.y = -ball.Velocity.y;
+                ball.Position.y = ball.Diameter / 2; // Adjust position to prevent overlap
+            }
+            else if (ball.Position.y + ball.Diameter / 2 > windowData.ScreenHeight - windowData.BorderWidth)
+            {
+                ball.Velocity.y = -ball.Velocity.y;
+                ball.Position.y = windowData.ScreenHeight - windowData.BorderWidth - ball.Diameter / 2; // Adjust position
             }
         }
     }

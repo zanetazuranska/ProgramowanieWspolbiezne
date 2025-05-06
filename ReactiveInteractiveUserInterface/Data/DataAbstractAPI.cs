@@ -24,7 +24,7 @@ namespace TP.ConcurrentProgramming.Data
 
         #region public API
 
-        public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler, double diameter, WindowData.WindowData windowData);
+        public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler, double diameter);
 
         #endregion public API
 

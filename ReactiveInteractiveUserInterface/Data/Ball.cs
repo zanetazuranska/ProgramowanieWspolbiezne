@@ -14,12 +14,11 @@ namespace TP.ConcurrentProgramming.Data
     {
         #region ctor
 
-        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter, WindowData.WindowData windowData)
+        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter)
         {
             Position = initialPosition;
             Velocity = initialVelocity;
             this.diameter = diameter;
-            this.windowData = windowData;
         }
 
         #endregion ctor
@@ -41,12 +40,9 @@ namespace TP.ConcurrentProgramming.Data
             set { diameter = value; } // Now you can set Diameter
         }
 
-
         #endregion IBall
 
         #region private
-
-        private WindowData.WindowData windowData;
 
         // Method to notify when position changes
         private void RaiseNewPositionChangeNotification()
@@ -63,39 +59,8 @@ namespace TP.ConcurrentProgramming.Data
 
             Position = new Vector(newX, newY);
 
-            // Check and resolve wall collisions
-            ResolveCollision();
-
             // Notify listeners about the new position
             RaiseNewPositionChangeNotification();
-        }
-
-        // Collision handling with walls
-        private void ResolveCollision()
-        {
-            // Check for collisions with the left and right walls
-            if (Position.x - diameter / 2 < 0)
-            {
-                Velocity = new Vector(-Velocity.x, Velocity.y); // Reverse X velocity
-                Position = new Vector(diameter / 2, Position.y); // Adjust position to prevent overlap
-            }
-            else if (Position.x + diameter / 2 > windowData.ScreenWidth - windowData.BorderWidth)
-            {
-                Velocity = new Vector(-Velocity.x, Velocity.y); // Reverse X velocity
-                Position = new Vector(windowData.ScreenWidth - windowData.BorderWidth - diameter / 2, Position.y); // Adjust position
-            }
-
-            // Check for collisions with the top and bottom walls
-            if (Position.y - diameter / 2 < 0)
-            {
-                Velocity = new Vector(Velocity.x, -Velocity.y); // Reverse Y velocity
-                Position = new Vector(Position.x, diameter / 2); // Adjust position to prevent overlap
-            }
-            else if (Position.y + diameter / 2 > windowData.ScreenHeight - windowData.BorderWidth)
-            {
-                Velocity = new Vector(Velocity.x, -Velocity.y); // Reverse Y velocity
-                Position = new Vector(Position.x, windowData.ScreenHeight - windowData.BorderWidth - diameter / 2); // Adjust position
-            }
         }
 
         #endregion private

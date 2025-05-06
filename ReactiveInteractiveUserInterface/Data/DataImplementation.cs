@@ -21,15 +21,13 @@ namespace TP.ConcurrentProgramming.Data
         #region ctor
 
         public DataImplementation()
-        {
-            //MoveTimer = new Timer(Move, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(10));
-        }
+        {}
 
         #endregion ctor
 
         #region DataAbstractAPI
 
-        public override void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler, double diameter, WindowData.WindowData windowData)
+        public override void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler, double diameter)
         {
             if (Disposed)
                 throw new ObjectDisposedException(nameof(DataImplementation));
@@ -69,7 +67,7 @@ namespace TP.ConcurrentProgramming.Data
                 Vector velocity = new((random.NextDouble() - 0.5d) * 4, (random.NextDouble() - 0.5d) * 4);
 
                 // Create and initialize the ball
-                Ball newBall = new(startingPosition, velocity, diameter, windowData);
+                Ball newBall = new(startingPosition, velocity, diameter);
                 upperLayerHandler(startingPosition, newBall);
                 BallsList.Add(newBall);
 
@@ -108,7 +106,6 @@ namespace TP.ConcurrentProgramming.Data
             {
                 if (disposing)
                 {
-                    //MoveTimer.Dispose();
                     BallsList.Clear();
                 }
                 Disposed = true;
@@ -135,12 +132,6 @@ namespace TP.ConcurrentProgramming.Data
         //private Random RandomGenerator = new();
         private List<IBall> BallsList = [];
         private List<CancellationTokenSource> CancellationTokens = new();
-
-        private void Move(object? x)
-        {
-            foreach (Ball item in BallsList)
-                item.Move(new(item.Velocity.x, item.Velocity.y));
-        }
 
         #endregion private
 

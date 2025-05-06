@@ -32,7 +32,7 @@
         </Border>
 
         <!-- Dodany suwak -->
-        <Slider Minimum="1" Maximum="100" Value="{Binding BallAmount, Mode=TwoWay}" IsEnabled="{Binding IsStartSimulationEnabled}" Width="300" Margin="0,20,0,0" TickFrequency="1"/>
+        <Slider Minimum="1" Maximum="50" Value="{Binding BallAmount, Mode=TwoWay}" IsEnabled="{Binding IsStartSimulationEnabled}" Width="300" Margin="0,20,0,0" TickFrequency="1"/>
         <!-- Pole tekstowe z aktualną wartością -->
         <TextBlock Text="{Binding BallAmount, StringFormat='Ilość piłek: {0:F0}'}"
                    FontWeight="Bold"

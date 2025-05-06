@@ -37,7 +37,7 @@ namespace TP.ConcurrentProgramming.Data
                 throw new ArgumentNullException(nameof(upperLayerHandler));
 
             Random random = new Random();
-            double minSpacing = diameter * 5; // Slightly more than the diameter to ensure spacing
+            double minSpacing = diameter * 2; // Slightly more than the diameter to ensure spacing
 
             for (int i = 0; i < numberOfBalls; i++)
             {
@@ -90,77 +90,12 @@ namespace TP.ConcurrentProgramming.Data
                     {
                         // Move the ball
                         ball.Move(new(ball.Velocity.x, ball.Velocity.y));
-
-                        // Check for collisions with other balls
-                        foreach (var otherBall in BallsList)
-                        {
-                            if (ball != otherBall && CheckCollision(ball, otherBall))
-                            {
-                                ResolveCollision(ball, otherBall);
-                            }
-                        }
-
-                        if(ball.Velocity.x == 0 || ball.Velocity.y == 0)
-                            Console.WriteLine(ball.Velocity.ToString());
                     }
 
                     // Introduce a delay to control the movement speed (e.g., ~60 FPS)
                     await Task.Delay(16);
                 }
             }, cancellationToken);
-        }
-
-        private bool CheckCollision(Ball ball1, Ball ball2)
-        {
-            double dx = ball1.Position.x - ball2.Position.x;
-            double dy = ball1.Position.y - ball2.Position.y;
-            double distance = Math.Sqrt(dx * dx + dy * dy);
-
-            // Check if the distance is less than the sum of the radii
-            return distance < (ball1.Diameter / 2 + ball2.Diameter / 2);
-        }
-
-        private void ResolveCollision(Ball ball1, Ball ball2)
-        {
-            // Calculate the normal vector (line of collision)
-            double dx = ball1.Position.x - ball2.Position.x;
-            double dy = ball1.Position.y - ball2.Position.y;
-            double distance = Math.Sqrt(dx * dx + dy * dy);
-
-            if (distance == 0) return; // Prevent division by zero
-
-            // Normalize the collision vector
-            double nx = dx / distance;
-            double ny = dy / distance;
-
-            // Separate overlapping balls
-            double overlap = (ball1.Diameter / 2 + ball2.Diameter / 2) - distance;
-            if (overlap > 0)
-            {
-                // Move each ball away from the collision line equally
-                ball1.Position = new Vector(ball1.Position.x + nx * overlap / 2, ball1.Position.y + ny * overlap / 2);
-                ball2.Position = new Vector(ball2.Position.x - nx * overlap / 2, ball2.Position.y - ny * overlap / 2);
-            }
-
-            // Project velocities onto the collision vector
-            double p1 = ball1.Velocity.x * nx + ball1.Velocity.y * ny;
-            double p2 = ball2.Velocity.x * nx + ball2.Velocity.y * ny;
-
-            // Swap the projected velocities (perfectly elastic collision)
-            double temp = p1;
-            p1 = p2;
-            p2 = temp;
-
-            // Update velocities along the collision vector
-            ball1.Velocity = new Vector(
-                ball1.Velocity.x + (p1 - (ball1.Velocity.x * nx + ball1.Velocity.y * ny)) * nx,
-                ball1.Velocity.y + (p1 - (ball1.Velocity.x * nx + ball1.Velocity.y * ny)) * ny
-            );
-
-            ball2.Velocity = new Vector(
-                ball2.Velocity.x + (p2 - (ball2.Velocity.x * nx + ball2.Velocity.y * ny)) * nx,
-                ball2.Velocity.y + (p2 - (ball2.Velocity.x * nx + ball2.Velocity.y * ny)) * ny
-            );
         }
 
         #endregion DataAbstractAPI
@@ -198,7 +133,7 @@ namespace TP.ConcurrentProgramming.Data
 
         //private readonly Timer MoveTimer;
         //private Random RandomGenerator = new();
-        private List<Ball> BallsList = [];
+        private List<IBall> BallsList = [];
         private List<CancellationTokenSource> CancellationTokens = new();
 
         private void Move(object? x)
@@ -208,6 +143,11 @@ namespace TP.ConcurrentProgramming.Data
         }
 
         #endregion private
+
+        public override List<IBall> GetBallsList() // Publiczna metoda do pobrania listy kulek
+        {
+            return BallsList;
+        }
 
         #region TestingInfrastructure
 

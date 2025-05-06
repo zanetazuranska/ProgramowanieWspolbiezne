@@ -18,7 +18,6 @@ namespace TP.ConcurrentProgramming.Data
         {
             Position = initialPosition;
             Velocity = initialVelocity;
-
             this.diameter = diameter;
             this.windowData = windowData;
         }
@@ -27,26 +26,35 @@ namespace TP.ConcurrentProgramming.Data
 
         #region IBall
 
+        // Event for notifying about position changes
         public event EventHandler<IVector>? NewPositionNotification;
 
+        // Properties for Position and Velocity
         public IVector Velocity { get; set; }
+        public IVector Position { get; set; }
 
+        // Property for Diameter
         private double diameter;
-        private WindowData.WindowData windowData;
+        public double Diameter
+        {
+            get { return diameter; }
+            set { diameter = value; } // Now you can set Diameter
+        }
 
 
         #endregion IBall
 
         #region private
 
-        public Vector Position { get; set; }
-        public double Diameter { get { return this.diameter; } }
+        private WindowData.WindowData windowData;
 
+        // Method to notify when position changes
         private void RaiseNewPositionChangeNotification()
         {
             NewPositionNotification?.Invoke(this, Position);
         }
 
+        // Method for moving the ball
         internal void Move(Vector delta)
         {
             // Update the position based on the velocity and delta
@@ -62,6 +70,7 @@ namespace TP.ConcurrentProgramming.Data
             RaiseNewPositionChangeNotification();
         }
 
+        // Collision handling with walls
         private void ResolveCollision()
         {
             // Check for collisions with the left and right walls

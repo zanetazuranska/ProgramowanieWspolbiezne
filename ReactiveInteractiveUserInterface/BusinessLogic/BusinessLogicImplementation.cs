@@ -148,10 +148,8 @@ namespace TP.ConcurrentProgramming.BusinessLogic
             double overlap = (ball1.Diameter / 2 + ball2.Diameter / 2) - distance;
             if (overlap > 0)
             {
-                ball1.Position.x += nx * overlap / 2;
-                ball1.Position.y += ny * overlap / 2;
-                ball2.Position.x -= nx * overlap / 2;
-                ball2.Position.y -= ny * overlap / 2;
+                ball1.Position = new TP.ConcurrentProgramming.Data.Vector(ball1.Position.x + nx * overlap / 2, ball1.Position.y + ny * overlap / 2);
+                ball2.Position = new TP.ConcurrentProgramming.Data.Vector(ball2.Position.x - nx * overlap / 2, ball2.Position.y - ny * overlap / 2);
             }
 
             // Wektor względnej prędkości
@@ -165,40 +163,45 @@ namespace TP.ConcurrentProgramming.BusinessLogic
             if (dotProduct >= 0) return;
 
             // Obliczenie impulsu (dla równych mas i odbicia sprężystego)
-            double impulse = 2 * dotProduct / 2; // dzielimy przez sumę mas (1 + 1)
+            double impulseMagnitude = 2 * dotProduct / 2; // dzielimy przez sumę mas (1 + 1)
 
-            // Aktualizacja prędkości
-            ball1.Velocity.x -= impulse * nx;
-            ball1.Velocity.y -= impulse * ny;
+            // Impulsy do kul (ujemny dla ball1, dodatni dla ball2)
+            TP.ConcurrentProgramming.Data.Vector impulse1 = new TP.ConcurrentProgramming.Data.Vector(-impulseMagnitude * nx, -impulseMagnitude * ny);
+            TP.ConcurrentProgramming.Data.Vector impulse2 = new TP.ConcurrentProgramming.Data.Vector(impulseMagnitude * nx, impulseMagnitude * ny);
 
-            ball2.Velocity.x += impulse * nx;
-            ball2.Velocity.y += impulse * ny;
+            // Zastosuj impulsy korzystając z metody ApplyImpulse
+            (ball1 as TP.ConcurrentProgramming.Data.IBall)?.ApplyImpulse(impulse1);
+            (ball2 as TP.ConcurrentProgramming.Data.IBall)?.ApplyImpulse(impulse2);
         }
+
 
         private void ResolveWallsCollision(TP.ConcurrentProgramming.Data.IBall ball)
         {
-            // Check for collisions with the left and right walls
+            var b = ball as TP.ConcurrentProgramming.Data.IBall;
+            if (b == null) return;
+
+            // Lewa i prawa ściana
             if (ball.Position.x - ball.Diameter / 2 < 0)
             {
-                ball.Velocity.x = -ball.Velocity.x;
-                ball.Position.x = ball.Diameter / 2;
+                b.ReflectHorizontally();
+                ball.Position = new TP.ConcurrentProgramming.Data.Vector(ball.Diameter / 2, ball.Position.y);
             }
             else if (ball.Position.x + ball.Diameter / 2 > windowData.ScreenWidth - windowData.BorderWidth)
             {
-                ball.Velocity.x = -ball.Velocity.x;
-                ball.Position.x = windowData.ScreenWidth - windowData.BorderWidth - ball.Diameter / 2;
+                b.ReflectHorizontally();
+                ball.Position = new TP.ConcurrentProgramming.Data.Vector(windowData.ScreenWidth - windowData.BorderWidth - ball.Diameter / 2, ball.Position.y);
             }
 
-            // Check for collisions with the top and bottom walls
+            // Górna i dolna ściana
             if (ball.Position.y - ball.Diameter / 2 < 0)
             {
-                ball.Velocity.y = -ball.Velocity.y;
-                ball.Position.y = ball.Diameter / 2; // Adjust position to prevent overlap
+                b.ReflectVertically();
+                ball.Position = new TP.ConcurrentProgramming.Data.Vector(ball.Position.x, ball.Diameter / 2);
             }
             else if (ball.Position.y + ball.Diameter / 2 > windowData.ScreenHeight - windowData.BorderWidth)
             {
-                ball.Velocity.y = -ball.Velocity.y;
-                ball.Position.y = windowData.ScreenHeight - windowData.BorderWidth - ball.Diameter / 2; // Adjust position
+                b.ReflectVertically();
+                ball.Position = new TP.ConcurrentProgramming.Data.Vector(ball.Position.x, windowData.ScreenHeight - windowData.BorderWidth - ball.Diameter / 2);
             }
         }
     }

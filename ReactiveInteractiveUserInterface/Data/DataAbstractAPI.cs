@@ -52,9 +52,13 @@ namespace TP.ConcurrentProgramming.Data
     public interface IBall
     {
         event EventHandler<IVector> NewPositionNotification;
-        IVector Velocity { get; set; }
+        IVector Velocity { get; }
         IVector Position { get; set; }
         double Diameter { get; set; }
         int Id { get; }
+
+        public void ApplyImpulse(Vector impulse);
+        public void ReflectHorizontally();
+        public void ReflectVertically();
     }
 }

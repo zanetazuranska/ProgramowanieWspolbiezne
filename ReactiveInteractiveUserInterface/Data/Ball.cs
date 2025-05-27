@@ -20,7 +20,7 @@ namespace TP.ConcurrentProgramming.Data
         {
             Id = Interlocked.Increment(ref _idCounter);
             Position = initialPosition;
-            Velocity = initialVelocity;
+            velocity = initialVelocity;
             this.diameter = diameter;
         }
 
@@ -28,42 +28,91 @@ namespace TP.ConcurrentProgramming.Data
 
         #region IBall
 
-        // Event for notifying about position changes
         public event EventHandler<IVector>? NewPositionNotification;
 
-        // Properties for Position and Velocity
-        public IVector Velocity { get; set; }
-        public IVector Position { get; set; }
+        private Vector position;
+        private Vector velocity;
+        private readonly object velocityLock = new object();
+        private readonly object positionLock = new object();
 
-        // Property for Diameter
+        public IVector Position
+        {
+            get
+            {
+                lock (positionLock)
+                    return position;
+            }
+            set
+            {
+                lock (positionLock)
+                    position = (Vector)value;
+            }
+        }
+
+        public IVector Velocity
+        {
+            get
+            {
+                lock (velocityLock)
+                    return new Vector(velocity.x, velocity.y); // zwróć kopię
+            }
+            private set
+            {
+                lock (velocityLock)
+                    velocity = (Vector)value;
+            }
+        }
+
         private double diameter;
         public double Diameter
         {
             get { return diameter; }
-            set { diameter = value; } // Now you can set Diameter
+            set { diameter = value; }
         }
 
         #endregion IBall
 
+        public void ApplyImpulse(Vector impulse)
+        {
+            lock (velocityLock)
+            {
+                velocity.x += impulse.x;
+                velocity.y += impulse.y;
+            }
+        }
+
+        public void ReflectHorizontally()
+        {
+            lock (velocityLock)
+                velocity.x = -velocity.x;
+        }
+
+        public void ReflectVertically()
+        {
+            lock (velocityLock)
+                velocity.y = -velocity.y;
+        }
+
+        #region Movement
+
+        internal void Move(Vector delta)
+        {
+            lock (positionLock)
+            {
+                position.x += delta.x;
+                position.y += delta.y;
+            }
+
+            RaiseNewPositionChangeNotification();
+        }
+
+        #endregion Movement
+
         #region private
 
-        // Method to notify when position changes
         private void RaiseNewPositionChangeNotification()
         {
             NewPositionNotification?.Invoke(this, Position);
-        }
-
-        // Method for moving the ball
-        internal void Move(Vector delta)
-        {
-            // Update the position based on the velocity and delta
-            double newX = Position.x + delta.x;
-            double newY = Position.y + delta.y;
-
-            Position = new Vector(newX, newY);
-
-            // Notify listeners about the new position
-            RaiseNewPositionChangeNotification();
         }
 
         #endregion private

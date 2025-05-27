@@ -13,9 +13,12 @@ namespace TP.ConcurrentProgramming.Data
     internal class Ball : IBall
     {
         #region ctor
+        private static int _idCounter = 0;
+        public int Id { get; }
 
         internal Ball(Vector initialPosition, Vector initialVelocity, double diameter)
         {
+            Id = Interlocked.Increment(ref _idCounter);
             Position = initialPosition;
             Velocity = initialVelocity;
             this.diameter = diameter;

@@ -19,9 +19,12 @@ namespace TP.ConcurrentProgramming.Data
     internal class DataImplementation : DataAbstractAPI
     {
         #region ctor
+        private DiagnosticsLogger _logger;
 
         public DataImplementation()
-        {}
+        {
+            _logger = new DiagnosticsLogger("diagnostics.txt");
+        }
 
         #endregion ctor
 
@@ -64,7 +67,7 @@ namespace TP.ConcurrentProgramming.Data
                 } while (!isValidPosition);
 
                 // Generate random velocity for the ball
-                Vector velocity = new((random.NextDouble() - 0.5d) * 4, (random.NextDouble() - 0.5d) * 4);
+                Vector velocity = new((random.NextDouble() - 0.5d) * 100, (random.NextDouble() - 0.5d) * 100);
 
                 // Create and initialize the ball
                 Ball newBall = new(startingPosition, velocity, diameter);
@@ -82,15 +85,33 @@ namespace TP.ConcurrentProgramming.Data
         {
             Task.Run(async () =>
             {
+                var stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+                long lastTick = stopwatch.ElapsedMilliseconds;
+
                 while (!cancellationToken.IsCancellationRequested)
                 {
+                    long currentTick = stopwatch.ElapsedMilliseconds;
+                    float deltaTime = (currentTick - lastTick) / 1000.0f; // czas w sekundach
+                    lastTick = currentTick;
+
                     lock (BallsList)
                     {
-                        // Move the ball
-                        ball.Move(new(ball.Velocity.x, ball.Velocity.y));
+                        // Uwzględnienie upływu czasu w przesunięciu piłki
+                        ball.Move(new(ball.Velocity.x * deltaTime, ball.Velocity.y * deltaTime));
                     }
 
-                    // Introduce a delay to control the movement speed (e.g., ~60 FPS)
+                    _logger.Log(new DiagnosticData
+                    {
+                        Timestamp = DateTime.UtcNow,
+                        BallId = ball.Id,
+                        PositionX = ball.Position.x,
+                        PositionY = ball.Position.y,
+                        VelocityX = ball.Velocity.x,
+                        VelocityY = ball.Velocity.y,
+                    });
+
+                    // Kontrola częstotliwości aktualizacji (np. ~60 FPS)
                     await Task.Delay(16);
                 }
             }, cancellationToken);
@@ -102,6 +123,8 @@ namespace TP.ConcurrentProgramming.Data
 
         protected virtual void Dispose(bool disposing)
         {
+            _logger.Dispose();
+
             if (!Disposed)
             {
                 if (disposing)

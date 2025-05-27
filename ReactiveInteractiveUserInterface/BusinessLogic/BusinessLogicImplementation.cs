@@ -107,6 +107,7 @@ namespace TP.ConcurrentProgramming.BusinessLogic
                     for (int i = 0; i < ballsList.Count; i++)
                     {
                         var ball = ballsList[i];
+
                         for (int j = i + 1; j < ballsList.Count; j++)
                         {
                             var otherBall = ballsList[j];

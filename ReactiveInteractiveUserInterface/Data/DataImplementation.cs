@@ -67,7 +67,7 @@ namespace TP.ConcurrentProgramming.Data
                 } while (!isValidPosition);
 
                 // Generate random velocity for the ball
-                Vector velocity = new((random.NextDouble() - 0.5d) * 100, (random.NextDouble() - 0.5d) * 100);
+                Vector velocity = new((random.NextDouble() - 0.5d) * 150, (random.NextDouble() - 0.5d) * 150);
 
                 // Create and initialize the ball
                 Ball newBall = new(startingPosition, velocity, diameter);

@@ -32,12 +32,31 @@ namespace TP.ConcurrentProgramming.BusinessLogic.Test
             public Data.IVector Position { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
             public double Diameter { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+            public int Id => throw new NotImplementedException();
+
             public event EventHandler<Data.IVector>? NewPositionNotification;
+
+            public void ApplyImpulse(Data.Vector impulse)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReflectHorizontally()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReflectVertically()
+            {
+                throw new NotImplementedException();
+            }
 
             internal void Move()
             {
                 NewPositionNotification?.Invoke(this, new VectorFixture(0.0, 0.0));
             }
+
+            
         }
 
         private class VectorFixture : Data.IVector

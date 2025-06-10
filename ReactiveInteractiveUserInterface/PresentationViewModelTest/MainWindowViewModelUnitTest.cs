@@ -15,6 +15,7 @@ using System.Reactive.Linq;
 using TP.ConcurrentProgramming.Presentation.Model;
 using ModelIBall = TP.ConcurrentProgramming.Presentation.Model.IBall;
 using TP.ConcurrentProgramming.Data.WindowData;
+using System.Windows.Media;
 
 namespace TP.ConcurrentProgramming.Presentation.ViewModel.Test
 {
@@ -169,9 +170,16 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel.Test
 
                 public double Left => throw new NotImplementedException();
 
+                public Brush Filling { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
                 #region INotifyPropertyChanged
 
                 public event PropertyChangedEventHandler? PropertyChanged;
+
+                public void SetRandomColor()
+                {
+                    throw new NotImplementedException();
+                }
 
                 #endregion INotifyPropertyChanged
 

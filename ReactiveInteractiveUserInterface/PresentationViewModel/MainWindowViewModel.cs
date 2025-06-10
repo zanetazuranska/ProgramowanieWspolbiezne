@@ -34,6 +34,8 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
             StartSimulation = new RelayCommand(ExecuteStartSimulation);
+
+            timer = new System.Timers.Timer(25);
         }
 
         #endregion ctor
@@ -58,7 +60,6 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
             ModelLayer.Start(ballAmount, Diameter, WindowData);
             Observer.Dispose();
 
-            timer = new System.Timers.Timer(25);
             timer.AutoReset = true;
             timer.Enabled = true;
             timer.Elapsed += OnTimerElapsed;

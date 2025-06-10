@@ -10,6 +10,7 @@
 using System;
 using System.ComponentModel;
 using TP.ConcurrentProgramming.Data.WindowData;
+using System.Windows.Media;
 
 namespace TP.ConcurrentProgramming.Presentation.Model
 {
@@ -18,6 +19,9 @@ namespace TP.ConcurrentProgramming.Presentation.Model
     double Top { get; }
     double Left { get; }
     double Diameter { get; }
+
+    Brush Filling { get; set; }
+    public void SetRandomColor();
   }
 
   public abstract class ModelAbstractApi : IObservable<IBall>, IDisposable

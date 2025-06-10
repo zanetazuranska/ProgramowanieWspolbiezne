@@ -15,6 +15,8 @@ using ModelIBall = TP.ConcurrentProgramming.Presentation.Model.IBall;
 using TP.ConcurrentProgramming.Data.WindowData;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Timers;
+using System.Windows;
 
 namespace TP.ConcurrentProgramming.Presentation.ViewModel
 {
@@ -48,6 +50,7 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
 
         public ICommand StartSimulation { get; }
 
+        private System.Timers.Timer timer;
         public void ExecuteStartSimulation()
         {
             if (Disposed)
@@ -55,7 +58,24 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
             ModelLayer.Start(ballAmount, Diameter, WindowData);
             Observer.Dispose();
 
+            timer = new System.Timers.Timer(25);
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            timer.Elapsed += OnTimerElapsed;
+
+
             IsStartSimulationEnabled = false;
+        }
+
+        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var item in Balls)
+                {
+                    item.SetRandomColor();
+                }
+            });
         }
 
         public int BallAmount
@@ -96,6 +116,9 @@ namespace TP.ConcurrentProgramming.Presentation.ViewModel
                     Balls.Clear();
                     Observer.Dispose();
                     ModelLayer.Dispose();
+
+                    timer.Stop();
+                    timer.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
